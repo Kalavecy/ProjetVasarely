@@ -1,0 +1,128 @@
+"""
+Projet Vasarely - MOOC Python
+Plateforme Fun-MOOC, encadré par l'ULB
+
+Le programme dessine un pavage d'hexagones divisés en trois couleurs
+sur lesquels sont appliqués une déformation "boule 3D".
+Inspiré des oeuvres de Vasarely.
+
+Par Cassandra Courjaud
+13/03/2019
+"""
+
+import turtle
+import math
+from deformation import deformation
+
+# Definition des variables entrées par l'utilisateur
+
+inf_gauche = abs(int(input("Coordonnée x du coin inférieur gauche : ")))
+sup_droit = abs(int(input("Coordonnée x du coin supérieur droit : ")))
+longueur = int(input("Longueur des côtés de l'hexagone : "))
+col1 = input("Couleur 1 : ")
+col2 = input("Couleur 2 : ")
+col3 = input("Couleur 3 : ")
+rayon = int(input("Taille du rayon : "))
+centre = int(input("Abscisse du centre de la déformation : ")), int(input("Ordonnée du centre de la déformation : ")), \
+    int(input("Hauteur de la déformation : "))
+
+
+def list_pos(c, longueur, t):
+    """ Reçoit le centre avant déformation et donne dans un tableau la liste
+    des coordonnées de l'hexagone de rayon longueur sans déformation"""
+    res = []
+    t.up()
+    t.hideturtle
+    x, y, z = c
+    t.goto(x, y)
+    t.forward(longueur)
+    t.left(120)
+    for i in range(6):  # trace un losange
+        t.forward(longueur)
+        t.left(60)
+        res.append(t.pos())  # récupère les coordonnées de la tortue à chaque tour de boucle
+    return res
+
+
+def hexagone(t, c, longueur, col1, col2, col3, deformation, centre, rayon):
+    """ Dessine un pavé hexagonal en prenant en compte les points qui ont
+    été déformé selon la fonction deformation
+    Les hexagones sont composés de trois losanges de couleur col1, col2 et col3"""
+
+    z = 0
+    list_positions = list_pos(c, longueur, t)
+    c_new = deformation((c[0], c[1], z), centre, rayon)
+    # calcul des nouvelles coordonnées des points via la fonction deformation
+    p1 = deformation((list_positions[0][0], list_positions[0][1], z), centre, rayon)
+    p2 = deformation((list_positions[1][0], list_positions[1][1], z), centre, rayon)
+    p3 = deformation((list_positions[2][0], list_positions[2][1], z), centre, rayon)
+    p4 = deformation((list_positions[3][0], list_positions[3][1], z), centre, rayon)
+    p5 = deformation((list_positions[4][0], list_positions[4][1], z), centre, rayon)
+    p6 = deformation((list_positions[5][0], list_positions[5][1], z), centre, rayon)
+
+    t.showturtle()
+    t.up()
+    t.goto(c_new[0], c_new[1])  # point de départ de la tortue
+    t.down()
+
+    t.color(col1, col1)  # dessin du losange de couleur col1
+    t.begin_fill()
+    t.goto(p6[0], p6[1])
+    t.goto(p1[0], p1[1])
+    t.goto(p2[0], p2[1])
+    t.goto(c_new[0], c_new[1])
+    t.end_fill()
+
+    t.color(col2, col2)  # dessin du losange de couleur col2
+    t.begin_fill()
+    t.goto(p4[0], p4[1])
+    t.goto(p5[0], p5[1])
+    t.goto(p6[0], p6[1])
+    t.goto(c_new[0], c_new[1])
+    t.end_fill()
+
+    t.color(col3, col3)  # dessin du losange de couleur col3
+    t.begin_fill()
+    t.goto(p2[0], p2[1])
+    t.goto(p3[0], p3[1])
+    t.goto(p4[0], p4[1])
+    t.goto(c_new[0], c_new[1])
+    t.end_fill()
+
+    t.setheading(0)  # remet la tortue en place pour le prochain hexagone
+
+
+def pavage(t, inf_gauche, sup_droit, longueur, col1, col2, col3, deformation, centre, rayon):
+    """ Dessine avec turtle un pavage hexagonal
+        prenant comme paramètres:
+        - t : la turtle,
+        - (inf_gauche, sup_droit): les bornes inférieures et supérieures du pavage
+        -  longueur: longueur de chaque arête du pavé
+        - col1, col2, col3 : les couleurs des 3 losanges
+        - deformation, centre, rayon : pour la boule de déformation"""
+
+    x, y, z = inf_gauche, inf_gauche, 0
+
+    t.speed(1000)
+
+    t.up()
+    t.goto(x, y)
+
+    x_initial = x
+    m = longueur * math.sin(math.pi / 3)
+    ligne = 0
+
+    while y <= sup_droit:  # limite le nombre de lignes d'après la taille du pavage demandée
+        while x <= sup_droit:  # idem mais pour le nombre d'hexagones par lignes
+            hexagone(turtle, (x, y, z), longueur, col1, col2, col3, deformation, centre, rayon)
+            x += 3 * longueur  # décale chaque hexagone horizontalement
+        if ligne % 2 != 0:
+            x = x_initial  # si le nb de ligne est pair alors on revient à la position initiale
+        else:
+            x = x_initial + ((3 / 2) * longueur)  # sinon on décale le centre de l'hexagone
+        y += m  # pour faire un ligne au dessus à chaque tour de boucle
+        ligne += 1  # compte le nombre de lignes
+
+
+while True:
+    pavage(turtle, - inf_gauche, sup_droit, longueur, col1, col2, col3, deformation, centre, rayon)
