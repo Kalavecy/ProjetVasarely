@@ -14,18 +14,6 @@ import turtle
 import math
 from deformation import deformation
 
-# Definition des variables entrées par l'utilisateur
-
-inf_gauche = abs(int(input("Coordonnée x du coin inférieur gauche : ")))
-sup_droit = abs(int(input("Coordonnée x du coin supérieur droit : ")))
-longueur = int(input("Longueur des côtés de l'hexagone : "))
-col1 = input("Couleur 1 : ")
-col2 = input("Couleur 2 : ")
-col3 = input("Couleur 3 : ")
-rayon = int(input("Taille du rayon : "))
-centre = int(input("Abscisse du centre de la déformation : ")), int(input("Ordonnée du centre de la déformation : ")), \
-    int(input("Hauteur de la déformation : "))
-
 
 def list_pos(c, longueur, t):
     """ Reçoit le centre avant déformation et donne dans un tableau la liste
@@ -42,6 +30,16 @@ def list_pos(c, longueur, t):
         t.left(60)
         res.append(t.pos())  # récupère les coordonnées de la tortue à chaque tour de boucle
     return res
+
+def losange(color, point1, point2, point3):
+    """ Permet de dessiner un losange """
+    t.color(color, color)  # dessin du losange de couleur col1
+    t.begin_fill()
+    t.goto(point1[0], point1[1])
+    t.goto(point2[0], point2[1])
+    t.goto(point3[0], point3[1])
+    t.goto(c_new[0], c_new[1])
+    t.end_fill()
 
 
 def hexagone(t, c, longueur, col1, col2, col3, deformation, centre, rayon):
@@ -65,29 +63,9 @@ def hexagone(t, c, longueur, col1, col2, col3, deformation, centre, rayon):
     t.goto(c_new[0], c_new[1])  # point de départ de la tortue
     t.down()
 
-    t.color(col1, col1)  # dessin du losange de couleur col1
-    t.begin_fill()
-    t.goto(p6[0], p6[1])
-    t.goto(p1[0], p1[1])
-    t.goto(p2[0], p2[1])
-    t.goto(c_new[0], c_new[1])
-    t.end_fill()
-
-    t.color(col2, col2)  # dessin du losange de couleur col2
-    t.begin_fill()
-    t.goto(p4[0], p4[1])
-    t.goto(p5[0], p5[1])
-    t.goto(p6[0], p6[1])
-    t.goto(c_new[0], c_new[1])
-    t.end_fill()
-
-    t.color(col3, col3)  # dessin du losange de couleur col3
-    t.begin_fill()
-    t.goto(p2[0], p2[1])
-    t.goto(p3[0], p3[1])
-    t.goto(p4[0], p4[1])
-    t.goto(c_new[0], c_new[1])
-    t.end_fill()
+    losange(col1, p6, p1, p2)
+    losange(col2, p4, p5, p6)
+    losange(col3, p2, p3, p4)
 
     t.setheading(0)  # remet la tortue en place pour le prochain hexagone
 
@@ -122,6 +100,18 @@ def pavage(t, inf_gauche, sup_droit, longueur, col1, col2, col3, deformation, ce
             x = x_initial + ((3 / 2) * longueur)  # sinon on décale le centre de l'hexagone
         y += m  # pour faire un ligne au dessus à chaque tour de boucle
         ligne += 1  # compte le nombre de lignes
+
+# Definition des variables entrées par l'utilisateur
+
+inf_gauche = abs(int(input("Coordonnée x du coin inférieur gauche : ")))
+sup_droit = abs(int(input("Coordonnée x du coin supérieur droit : ")))
+longueur = int(input("Longueur des côtés de l'hexagone : "))
+col1 = input("Couleur 1 : ")
+col2 = input("Couleur 2 : ")
+col3 = input("Couleur 3 : ")
+rayon = int(input("Taille du rayon : "))
+centre = int(input("Abscisse du centre de la déformation : ")), int(input("Ordonnée du centre de la déformation : ")), \
+    int(input("Hauteur de la déformation : "))
 
 
 while True:
